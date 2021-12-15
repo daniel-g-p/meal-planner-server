@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import compression from "compression";
 
 import config from "./config/index.js";
 import { catchAllRoute, errorHandler } from "./middleware/errors.js";
@@ -9,7 +10,9 @@ import ingredients from "./routes/ingredients.js";
 
 const app = express();
 
-app.use(cors());
+app.use(compression());
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
 
 app.use("/api/ingredients", ingredients);
 
