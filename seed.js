@@ -1,4 +1,5 @@
 import newIngredient from "./models/ingredient.js";
+import newMeal from "./models/meal.js";
 
 import { connectToDatabase, db } from "./utilities/database.js";
 
@@ -43,9 +44,29 @@ const seedIngredients = async (numberOfIngredients) => {
   log("Ingredients seeded.");
 };
 
+const seedMeals = async (numberOfMeals) => {
+  await db.delete("meals", {});
+  const ingredients = await db.find("ingredients", {});
+  for (let i = 0; i < numberOfMeals; i++) {
+    const mealIngredients = [];
+    for (let j = 0; j < 5; j++) {
+      const index = randomNumber(0, ingredients.length);
+      mealIngredients.push({
+        id: ingredients[index]._id.toString(),
+        quantity: randomNumber(5, 20),
+      });
+    }
+    const meal = newMeal(randomString(7, 13), mealIngredients);
+    console.log(meal);
+    await db.create("meals", meal);
+  }
+  log("Meals seeded.");
+};
+
 const seed = async () => {
   await connectToDatabase();
   await seedIngredients(5);
+  await seedMeals(5);
   log("Database seeded.");
   process.exit();
 };
