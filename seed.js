@@ -2,15 +2,20 @@ import newIngredient from "./models/ingredient.js";
 
 import { connectToDatabase, db } from "./utilities/database.js";
 
-const randomString = (length = 10) => {
+const log = (message) => {
+  console.log(message);
+};
+
+const randomString = (minLength = 7, maxLength = 13) => {
   let string = "";
+  const length = randomNumber(minLength, maxLength);
   for (let i = 0; i < length; i++) {
     string += Math.floor(Math.random() * 10);
   }
   return string;
 };
 
-const randomNumber = (min, max, decimals = 0) => {
+const randomNumber = (min = 0, max = 1, decimals = 0) => {
   const range = max - min;
   const multiplier = decimals * 10 || 1;
   return Math.floor(Math.random() * range * multiplier + min) / multiplier;
@@ -25,7 +30,7 @@ const seedIngredients = async (numberOfIngredients) => {
   await db.delete("ingredients", {});
   for (let i = 0; i < numberOfIngredients; i++) {
     const ingredient = newIngredient(
-      randomString(10),
+      randomString(),
       randomUnit(),
       randomNumber(0, 99, 1),
       randomNumber(0, 99, 1),
@@ -35,13 +40,13 @@ const seedIngredients = async (numberOfIngredients) => {
     );
     await db.create("ingredients", ingredient);
   }
-  console.log("Ingredients seeded.");
+  log("Ingredients seeded.");
 };
 
 const seed = async () => {
   await connectToDatabase();
   await seedIngredients(5);
-  console.log("Database seeded.");
+  log("Database seeded.");
   process.exit();
 };
 

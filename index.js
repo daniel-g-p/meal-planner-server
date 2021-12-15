@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 import config from "./config/index.js";
 import { catchAllRoute, errorHandler } from "./middleware/errors.js";
@@ -7,6 +8,8 @@ import { connectToDatabase } from "./utilities/database.js";
 import ingredients from "./routes/ingredients.js";
 
 const app = express();
+
+app.use(cors());
 
 app.use("/api/ingredients", ingredients);
 
