@@ -18,13 +18,18 @@ export default {
         });
         if (savedIngredient) {
           meal.ingredients[i].name = savedIngredient.name;
+          meal.ingredients[i].unit = savedIngredient.unit;
         } else {
-          const newIngredient = await db.findById("ingredients", id, ["name"]);
+          const newIngredient = await db.findById("ingredients", id, [
+            "name",
+            "unit",
+          ]);
           if (!newIngredient) {
             notFoundIngredients.unshift(i);
           } else {
             savedIngredients.push(newIngredient);
             meal.ingredients[i].name = newIngredient.name;
+            meal.ingredients[i].unit = newIngredient.unit;
           }
         }
       }
@@ -41,22 +46,14 @@ export default {
     return meals;
   },
   validateMeal: (meal) => {
-    const validUnits = ["100g", "100ml", "unit", "tsp", "tbsp"];
-    const data = newMeal(
-      meal.name,
-      meal.unit || "100g",
-      +meal.carbohydrates || 0,
-      +meal.sugars || 0,
-      +meal.fats || 0,
-      +meal.saturatedFats || 0,
-      +meal.protein || 0
-    );
     return validate(
-      data,
-      condition(meal.name, "Please enter an meal name."),
+      newMeal(meal.name, meal.ingredients),
+      condition(meal.name, "Please enter a meal name."),
       condition(
-        validUnits.includes(meal.unit),
-        "Please select a valid measuring unit."
+        meal.ingredients.every((ingredient) => {
+          return ingredient.id && ingredient.quantity;
+        }),
+        "Invalid ingredients."
       )
     );
   },
@@ -78,14 +75,4 @@ export default {
   deleteMeal: async (mealId) => {
     return await db.deleteById("meals", mealId);
   },
-};
-
-const removeIngredientFromMeal = async (mealId, ingredientId) => {
-  const { ingredients } = db.findById("meals", mealId, ["ingredients"]);
-  const filteredIngredients = ingredients.filter((ingredient) => {
-    return ingredient.id !== ingredientId;
-  });
-  return await db.updateById("meals", mealId, {
-    ingredients: filteredIngredients,
-  });
 };
