@@ -49,6 +49,7 @@ export default {
     return validate(
       newMeal(meal.name, meal.ingredients),
       condition(meal.name, "Please enter a meal name."),
+      condition(meal.ingredients.length, "Please add at least one ingredient."),
       condition(
         meal.ingredients.every((ingredient) => {
           return ingredient.id && ingredient.quantity;

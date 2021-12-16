@@ -65,8 +65,8 @@ const seedMeals = async (numberOfMeals) => {
 
 const seed = async () => {
   await connectToDatabase();
-  await seedIngredients(5);
-  await seedMeals(5);
+  // await seedIngredients(5);
+  // await seedMeals(5);
   log("Database seeded.");
   process.exit();
 };
